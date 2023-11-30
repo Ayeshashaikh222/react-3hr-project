@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Card from '../UI/Card';
 import classes from './AddUser.module.css';
 import Button from '../UI/Button';
@@ -8,42 +8,43 @@ import Wrapper from '../Helpers/Wrapper';
 
 
 const AddUser = (props) => {
+    const nameInputRef = useRef();
+    const ageInputRef = useRef();
+    const CollegeInputRef = useRef();
 
-    const [entereduserName, setEnteredUserName] = useState('');
-    const [entereduserAge, setEnteredUserAge] = useState('');
     const [error, setError] = useState();
 
 
     const formSubmitHandler = (event) => {
         event.preventDefault();
-        if (entereduserName.trim().length === 0 || entereduserAge.trim().length === 0) {
+
+        const enteredName = nameInputRef.current.value;
+        const enteredAge = ageInputRef.current.value;
+        const enteredCollegeName = CollegeInputRef.current.value;
+
+        if (enteredName.trim().length === 0 || enteredAge.trim().length === 0  || enteredCollegeName.trim().length === 0) {
             setError({
                 title: 'Inavlid Input',
-                message: 'Please enter a valid name and age (non-empty values).'
+                message: 'Please enter a valid name, age and college name (non-empty values).'
             });
             return;
         }
-        if (+entereduserAge < 1) {
+        if (+enteredAge < 1) {
             setError({
                 title: 'Inavlid Age',
-                message: 'Please enter a valid n age (grater then zero).'
+                message: 'Please enter a valid age (> 0 ).'
             });
             return;
         }
-        console.log(entereduserName, entereduserAge);
-        props.onAddUser(entereduserName, entereduserAge);
-        setEnteredUserName('');
-        setEnteredUserAge('');
+        props.onAddUser(enteredName, enteredAge, enteredCollegeName);
+        nameInputRef.current.value = '';
+        ageInputRef.current.value = '';
+        CollegeInputRef.current.value = '';
+        
 
     };
 
-    const OnUserInputHandler = (event) => {
-        setEnteredUserName(event.target.value);
-    };
-
-    const OnUserAgeHandler = (event) => {
-        setEnteredUserAge(event.target.value);
-    };
+    
 
     const errorHandler = () => {
         setError(null);
@@ -57,9 +58,11 @@ const AddUser = (props) => {
             <Card className={classes.input}>
                 <form onSubmit={formSubmitHandler}>
                     <label htmlFor='username'>Username:</label>
-                    <input id='username' value={entereduserName} type='text' onChange={OnUserInputHandler} />
+                    <input id='username' type='text'  ref={nameInputRef} />
                     <label htmlFor='age'>Age(years):</label>
-                    <input id='age' type='number' value={entereduserAge} onChange={OnUserAgeHandler} />
+                    <input id='age' type='number' ref={ageInputRef} />
+                    <label htmlFor='collegeName'>College Name:</label>
+                    <input id='collegeName' type='text' ref={CollegeInputRef}/>
                     <Button type='submit'>Add User</Button>
                 </form>
             </Card>
